@@ -20,8 +20,7 @@ public class UserObject {
     @Column
     private String token;
 
-    @Transient
-    private List<PostObject> posts;
+
 
     public String getUsername() {
         return username;
@@ -50,13 +49,7 @@ public class UserObject {
     public void addPost (String post) {
     }
 
-    public List<PostObject> getPosts() {
-        return posts;
-    }
 
-    public void setPosts(List<PostObject> posts) {
-        this.posts = posts;
-    }
 
     public int getId() {
         return id;

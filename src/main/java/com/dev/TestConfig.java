@@ -1,6 +1,5 @@
 package com.dev;
 
-import com.dev.objects.PostObject;
 import com.dev.objects.UserObject;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -47,7 +46,8 @@ public class TestConfig {
             configuration.addAnnotatedClass(clazz);
         }
         configuration.addAnnotatedClass(UserObject.class);
-        configuration.addAnnotatedClass(PostObject.class);
+
+        //add configuration
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties()).build();
