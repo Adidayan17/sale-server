@@ -40,6 +40,10 @@ public class UserObject {
         this.firstLogIn = userObject.getFirstLogIn();
     }
 
+    public UserObject() {
+
+    }
+
     public String getUsername() {
         return username;
     }

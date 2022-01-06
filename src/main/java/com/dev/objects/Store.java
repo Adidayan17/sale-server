@@ -5,7 +5,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "store")
+@Table(name ="store")
 
 public class Store {
     @Id
@@ -19,6 +19,16 @@ public class Store {
     @ManyToOne
     @JoinColumn(name ="organizations")
     private Organizations organizations;
+
+    public Store(int id, String storeName, Organizations organizations) {
+        this.id = id;
+        this.storeName = storeName;
+        this.organizations = organizations;
+    }
+
+    public Store() {
+//cons
+    }
 
     public int getId() {
         return id;
