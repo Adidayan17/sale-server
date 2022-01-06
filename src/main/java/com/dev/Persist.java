@@ -7,15 +7,35 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 
 @Component
 public class Persist {
     private final SessionFactory sessionFactory;
+    private Connection connection;
+
 
     @Autowired
     public Persist(SessionFactory sf) {
         this.sessionFactory = sf;
+    }
+    @PostConstruct
+    public void createConnectionToDatabase() {
+
+        try {
+            this.connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/sales?SSL=false", "root", "1234");
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     // sign up

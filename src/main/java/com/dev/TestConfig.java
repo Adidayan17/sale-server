@@ -26,7 +26,7 @@ public class TestConfig {
     public Properties dataSource() throws Exception {
         Properties settings = new Properties();
         settings.put(Environment.DRIVER, "com.mysql.jdbc.Driver");
-        settings.put(Environment.URL, "jdbc:mysql://localhost:3306/ashcollege?useSSL=false&amp;useUnicode=true&amp;characterEncoding=utf8");
+        settings.put(Environment.URL, "jdbc:mysql://localhost:3306/sales?useSSL=false&amp;useUnicode=true&amp;characterEncoding=utf8");
         settings.put(Environment.USER, "root");
         settings.put(Environment.PASS, "1234");
         settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
