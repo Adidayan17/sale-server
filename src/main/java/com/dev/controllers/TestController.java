@@ -36,6 +36,11 @@ public class TestController {
     }
 
 
+//    @RequestMapping(value = "/did-like")
+//    public boolean   didLike (@RequestParam String token ,  int postId) {
+//        return persist.didLike(token,postId);
+//    }
+
 
 
 
