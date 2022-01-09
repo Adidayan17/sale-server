@@ -1,7 +1,7 @@
 package com.dev.objects;
 
-
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -16,18 +16,17 @@ public class Store {
     @Column (name = "storeName")
     private String storeName;
 
-    @ManyToOne
-    @JoinColumn(name ="organizations")
-    private Organizations organizations;
+    @Transient
+    private List<Sale> sales;
 
     public Store(int id, String storeName, Organizations organizations) {
         this.id = id;
         this.storeName = storeName;
-        this.organizations = organizations;
+
     }
 
     public Store() {
-//cons
+        this.sales = new ArrayList<>();
     }
 
     public int getId() {
@@ -46,11 +45,11 @@ public class Store {
         this.storeName = storeName;
     }
 
-    public Organizations getOrganizations() {
-        return organizations;
+    public List<Sale> getSales() {
+        return sales;
     }
 
-    public void setOrganizations(Organizations organizations) {
-        this.organizations = organizations;
+    public void setSales(List<Sale> sales) {
+        this.sales = sales;
     }
 }

@@ -1,6 +1,6 @@
 package com.dev;
 
-import com.dev.objects.UserObject;
+import com.dev.objects.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
@@ -29,7 +29,7 @@ public class TestConfig {
         settings.put(Environment.URL, "jdbc:mysql://localhost:3306/sales?useSSL=false&amp;useUnicode=true&amp;characterEncoding=utf8");
         settings.put(Environment.USER, "root");
         settings.put(Environment.PASS, "1234");
-        settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
+        settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL55Dialect");
         settings.put(Environment.SHOW_SQL, "true");
         settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
         settings.put(Environment.HBM2DDL_AUTO, "update");
@@ -46,6 +46,11 @@ public class TestConfig {
             configuration.addAnnotatedClass(clazz);
         }
         configuration.addAnnotatedClass(UserObject.class);
+        configuration.addAnnotatedClass(Organizations.class);
+        configuration.addAnnotatedClass(Sale.class);
+        configuration.addAnnotatedClass(Store.class);
+        configuration.addAnnotatedClass(OrganizationStore.class);
+        configuration.addAnnotatedClass(OrganizationUser.class);
 
         //add configuration
 

@@ -15,9 +15,16 @@ public class Organizations {
     @Column (name = "organizationName")
     private String organizationName;
 
-    @ManyToOne
-    @JoinColumn(name ="UserObject")
-    private UserObject userObject;
+
+
+
+    public Organizations (){
+
+    }
+    public Organizations (Organizations organizations){
+        this.id = organizations.getId();
+        this.organizationName = organizations.getOrganizationName();
+    }
 
     public int getId() {
         return id;
@@ -35,11 +42,4 @@ public class Organizations {
         this.organizationName = organizationName;
     }
 
-    public UserObject getUserObject() {
-        return userObject;
-    }
-
-    public void setUserObject(UserObject userObject) {
-        this.userObject = userObject;
-    }
 }

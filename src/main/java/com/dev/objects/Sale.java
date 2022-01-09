@@ -11,9 +11,6 @@ public class Sale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column (name="id")
     private int id ;
-    @ManyToOne
-    @JoinColumn(name="store")
-    private Store store;
 
     @Column (name="sale_text")
     private String saleText ;
@@ -26,6 +23,10 @@ public class Sale {
 
     @Column (name="available_for_all")
     private int availableForAll =0 ;
+
+    @ManyToOne
+    @JoinColumn(name="store")
+    private Store store;
 
     public int getId() {
         return id;

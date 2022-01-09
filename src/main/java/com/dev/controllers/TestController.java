@@ -1,6 +1,9 @@
 package com.dev.controllers;
 
 import com.dev.Persist;
+import com.dev.objects.Organizations;
+import com.dev.objects.Sale;
+import com.dev.objects.Store;
 import com.dev.objects.UserObject;
 import com.dev.utils.MessagesHandler;
 import com.dev.utils.Utils;
@@ -36,10 +39,52 @@ public class TestController {
     }
 
 
-//    @RequestMapping(value = "/did-like")
-//    public boolean   didLike (@RequestParam String token ,  int postId) {
-//        return persist.didLike(token,postId);
-//    }
+    @RequestMapping(value ="add-user" , method = RequestMethod.POST)
+    public boolean addUser (String username ,String password){
+       return persist.addUser(username,password);
+    }
+    @RequestMapping(value = "log-in")
+    public String logIn (String username , String password){
+        return persist.logIn(username,password);
+    }
+    @RequestMapping(value = "if-first-log-in")
+    public boolean doseFirstLogIn (String token){
+        return persist.firstLogIn(token);
+    }
+    @RequestMapping(value = "get-organizations")
+    public List<Organizations> getOrganizations (){
+        return persist.gatOrganizations();
+    }
+
+   @RequestMapping (value = "get-sales-by-user")
+    public List<Sale> getSalesForUser (String token){
+        return persist.getSaleForUser(token);
+
+   }
+   @RequestMapping (value = "change-setting")
+    public boolean changeSetting (String token , int organizationId){
+       return persist.addUserToOrganization( token , organizationId);
+    }
+    @RequestMapping(value = "get-sales-by-store-id")
+    public List<Sale> getSaleForStore (int storeId){
+        return persist.getSalesForStore(storeId);
+    }
+   @RequestMapping(value = "get-store-name-by-store-id")
+    public String getStoreNameById (int storeId){
+        return persist.getStoreById(storeId).getStoreName();
+   }
+   @RequestMapping(value = "if-sale-belong-to-user")
+    public boolean doseSaleBelongToUser (String token , int saleId){
+        return persist.doseSaleBelongToUser(token,saleId);
+   }
+   @RequestMapping(value = "gat-all-stores")
+    public List<Store> getStores (){
+        return persist.getStores();
+   }
+   @RequestMapping(value = "if-user-belong-to-organization")
+    public boolean doseUserBelongToOrganization (String token , int organizationId){
+      return persist.doseUserBelongToOrganization(token,organizationId);
+   }
 
 
 
