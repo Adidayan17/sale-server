@@ -77,7 +77,7 @@ public class TestController {
     public boolean doseSaleBelongToUser (String token , int saleId){
         return persist.doseSaleBelongToUser(token,saleId);
    }
-   @RequestMapping(value = "gat-all-stores")
+   @RequestMapping(value = "get-all-stores")
     public List<Store> getStores (){
         return persist.getStores();
    }
