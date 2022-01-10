@@ -15,30 +15,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-
 import java.util.List;
-
 
 @RestController
 public class TestController {
-
-
     @Autowired
     private Persist persist;
     private MessagesHandler messagesHandler;
-
     @PostConstruct
     private void init () {
 
+
+
     }
-
-
     @RequestMapping(value ="add-user" , method = RequestMethod.POST)
     public boolean addUser (String username ,String password){
        return persist.addUser(username,password);
@@ -55,15 +49,13 @@ public class TestController {
     public List<Organizations> getOrganizations (){
         return persist.gatOrganizations();
     }
-
    @RequestMapping (value = "get-sales-by-user")
     public List<Sale> getSalesForUser (String token){
         return persist.getSaleForUser(token);
-
    }
    @RequestMapping (value = "change-setting")
-    public boolean changeSetting (String token , int organizationId){
-       return persist.addUserToOrganization( token , organizationId);
+    public void changeSetting (String token , int organizationId){
+        persist.changeSettingForUserAndOrganization( token , organizationId);
     }
     @RequestMapping(value = "get-sales-by-store-id")
     public List<Sale> getSaleForStore (int storeId){
@@ -85,14 +77,4 @@ public class TestController {
     public boolean doseUserBelongToOrganization (String token , int organizationId){
       return persist.doseUserBelongToOrganization(token,organizationId);
    }
-
-
-
-
-
-
-
-
-
-
 }

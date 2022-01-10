@@ -192,9 +192,23 @@ public class Persist {
         return sales;
     }
 
+    //remove user to organization
+    public void removeUserFromOrganization (String token , int organizationId){
 
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        OrganizationUser  organizationUserToDelete = (OrganizationUser) session.createQuery("SELECT organizations FROM OrganizationUser O  where O.userObject.id =:userId AND o.organizations.id=:organizationId")
+                .setParameter("userId",getUserByToken(token).getId())
+                .setParameter("organizationId",organizationId)
+                .uniqueResult();
+        OrganizationUser organizationUser = (OrganizationUser) session.load(OrganizationUser.class,organizationUserToDelete.getId());
+        session.delete(organizationUser);
+        transaction.commit();
+        session.close();
+
+    }
     // add user to organization
-    public boolean addUserToOrganization(String token , int organizationId){
+    public void addUserToOrganization (String token , int organizationId){
 
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
@@ -202,12 +216,26 @@ public class Persist {
         session.save(organizationUser);
         transaction.commit();
         session.close();
-        if (organizationUser.getId() != 0) {
-            return true;
 
-        }else {
-        return false;
-        }
+
+
+    }
+
+
+
+
+    // change user from organization
+    public void changeSettingForUserAndOrganization(String token , int organizationId){
+
+         if (doseUserBelongToOrganization(token,organizationId)){
+
+            removeUserFromOrganization(token,organizationId);
+
+         }else {
+             addUserToOrganization(token, organizationId);
+         }
+
+
     }
 
 
@@ -235,7 +263,7 @@ public class Persist {
     public boolean doseUserBelongToOrganization (String token , int organizationId){
         Session session = sessionFactory.openSession();
         Organizations organizations=(Organizations)session
-                .createQuery("FROM OrganizationUser o WHERE o.userObject.id =:userId AND o.organizations.id =:organizationId")
+                .createQuery("SELECT organizations FROM OrganizationUser o WHERE o.userObject.id =:userId AND o.organizations.id =:organizationId")
                 .setParameter("userId",getUserByToken(token).getId())
                 .setParameter("organizationId",organizationId)
                 .uniqueResult();
