@@ -222,8 +222,6 @@ public class Persist {
     }
 
 
-
-
     // change user from organization
     public void changeSettingForUserAndOrganization(String token , int organizationId){
 
