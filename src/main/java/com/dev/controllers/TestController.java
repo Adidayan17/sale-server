@@ -34,7 +34,7 @@ public class TestController {
 
     }
     @RequestMapping(value ="add-user" , method = RequestMethod.POST)
-    public boolean addUser (String username ,String password){
+    public boolean addUser (@RequestParam String username ,String password){
        return persist.addUser(username,password);
     }
     @RequestMapping(value = "log-in")
@@ -53,9 +53,14 @@ public class TestController {
     public List<Sale> getSalesForUser (String token){
         return persist.getSaleForUser(token);
    }
-   @RequestMapping (value = "change-setting")
-    public void changeSetting (String token , int organizationId){
-        persist.changeSettingForUserAndOrganization( token , organizationId);
+
+    @RequestMapping (value = "get-all-sales")//amit add
+    public List<Sale> getAllSales (String token){
+        return persist.getAllSales(token);
+    }
+   @RequestMapping (value = "change-setting" )
+    public boolean changeSetting ( String token , int organizationId){
+      return   persist.changeSettingForUserAndOrganization( token , organizationId);
     }
     @RequestMapping(value = "get-sales-by-store-id")
     public List<Sale> getSaleForStore (int storeId){

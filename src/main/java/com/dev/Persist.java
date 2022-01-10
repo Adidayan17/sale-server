@@ -191,13 +191,19 @@ public class Persist {
         session.close();
         return sales;
     }
+//All sales for search page
+    public List<Sale> getAllSales  (String token)
+    {
+        return sessionFactory.openSession().createQuery("FROM Sale s ")
+                .list();
+    }
 
     //remove user to organization
     public void removeUserFromOrganization (String token , int organizationId){
 
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        OrganizationUser  organizationUserToDelete = (OrganizationUser) session.createQuery("SELECT organizations FROM OrganizationUser O  where O.userObject.id =:userId AND o.organizations.id=:organizationId")
+        OrganizationUser  organizationUserToDelete = (OrganizationUser) session.createQuery(" FROM OrganizationUser o where o.userObject.id =:userId AND o.organizations.id =:organizationId")
                 .setParameter("userId",getUserByToken(token).getId())
                 .setParameter("organizationId",organizationId)
                 .uniqueResult();
@@ -223,15 +229,21 @@ public class Persist {
 
 
     // change user from organization
-    public void changeSettingForUserAndOrganization(String token , int organizationId){
+    public boolean changeSettingForUserAndOrganization(String token , int organizationId){
+        if (getUserByToken(token) != null) {
 
-         if (doseUserBelongToOrganization(token,organizationId)){
+            if (doseUserBelongToOrganization(token, organizationId)) {
 
-            removeUserFromOrganization(token,organizationId);
+                removeUserFromOrganization(token, organizationId);
+                return false;
 
-         }else {
-             addUserToOrganization(token, organizationId);
-         }
+            } else {
+                addUserToOrganization(token, organizationId);
+                return true;
+            }
+        }
+
+        return false;
 
 
     }
@@ -278,7 +290,7 @@ public class Persist {
     //dose store belong to user
     public boolean doseStoreBelongToUser (String token ,int storeId ){
         Session session = sessionFactory.openSession();
-        Organizations organizations = (Organizations) session.createQuery("FROM OrganizationStore o WHERE o.store.id=:id ")
+        Organizations organizations = (Organizations) session.createQuery("SELECT organizations FROM OrganizationStore o WHERE o.store.id=:id ")
                 .setParameter("id",storeId)
                 .uniqueResult();
         session.close();
@@ -293,7 +305,7 @@ public class Persist {
     // if sale belong to user
     public boolean doseSaleBelongToUser (String token , int saleId) {
         Session session= sessionFactory.openSession();
-        Store store = (Store) session.createQuery("FROM Sale s WHERE s.id=:id")
+        Store store = (Store) session.createQuery("SELECT store FROM Sale s WHERE s.id=:id")
                 .setParameter("id",saleId)
                 .uniqueResult();
         session.close();
