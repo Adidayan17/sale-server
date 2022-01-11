@@ -49,6 +49,11 @@ public class TestController {
     public boolean doseFirstLogIn (String token){
         return persist.firstLogIn(token);
     }
+    @RequestMapping(value = "inc_first_log_in",method = RequestMethod.POST )
+    public void incFirstLogIn (@RequestParam String token){
+        persist.incFirstLogIn(token);
+
+    }
     @RequestMapping(value = "get-organizations")
     public List<Organizations> getOrganizations (){
         return persist.gatOrganizations();
@@ -86,19 +91,6 @@ public class TestController {
     public boolean doseUserBelongToOrganization (String token , int organizationId){
       return persist.doseUserBelongToOrganization(token,organizationId);
    }
-    @RequestMapping(value = "/start-sale")
-    public void startSale (@RequestParam String token) {
-        String sOe;
-        persist.getUserByToken(token);
-        List <Sale> sales=persist.getSaleForUser(token);
-        for(Sale sale:sales){
-            if(Objects.equals(sale.getStartDate(), "11-1-2022")){
-                sOe="start";
-            messagesHandler.sendSaleToUser(token,sale.getSaleText(),sOe);}
-            if(Objects.equals(sale.getEndDate(), "11-1-2022")){
-                sOe="end";
-                messagesHandler.sendSaleToUser(token,sale.getSaleText(),sOe);}
-        }
 
-    }
+
 }

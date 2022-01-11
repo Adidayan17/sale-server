@@ -91,18 +91,22 @@ public class Persist {
     }
     public boolean firstLogIn(String token) {
         UserObject userObject = getUserByToken(token);
-        if (userObject.getFirstLogIn() == 0) {
-            Session session = sessionFactory.openSession();
-            Transaction transaction = session.beginTransaction();
-            int firstLogin = 1;
-            userObject.setFirstLogIn(firstLogin);
-            session.saveOrUpdate(userObject);
-            transaction.commit();
-            session.close();
+        if (userObject.getFirstLogIn() == 0) {;
             return true;
         } else {
        return false;
         }
+    }
+
+    public void incFirstLogIn (String token){
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        UserObject userObject = getUserByToken(token);
+        int firstLogin = userObject.getFirstLogIn()+1;
+        userObject.setFirstLogIn(firstLogin);
+        session.saveOrUpdate(userObject);
+        transaction.commit();
+        session.close();
     }
 
     // get user
