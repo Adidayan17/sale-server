@@ -4,29 +4,32 @@ import com.dev.Persist;
 import com.dev.objects.Organizations;
 import com.dev.objects.Sale;
 import com.dev.objects.Store;
-import com.dev.objects.UserObject;
 import com.dev.utils.MessagesHandler;
-import com.dev.utils.Utils;
-import org.hibernate.engine.jdbc.StreamUtils;
+import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+
+
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 public class TestController {
     @Autowired
     private Persist persist;
     private MessagesHandler messagesHandler;
+
+
+    public TestController(MessagesHandler messagesHandler) {
+        this.messagesHandler = messagesHandler;
+    }
+
     @PostConstruct
     private void init () {
 
@@ -41,6 +44,7 @@ public class TestController {
     public String logIn (String username , String password){
         return persist.logIn(username,password);
     }
+
     @RequestMapping(value = "if-first-log-in")
     public boolean doseFirstLogIn (String token){
         return persist.firstLogIn(token);
@@ -82,4 +86,19 @@ public class TestController {
     public boolean doseUserBelongToOrganization (String token , int organizationId){
       return persist.doseUserBelongToOrganization(token,organizationId);
    }
+    @RequestMapping(value = "/start-sale")
+    public void startSale (@RequestParam String token) {
+        String sOe;
+        persist.getUserByToken(token);
+        List <Sale> sales=persist.getSaleForUser(token);
+        for(Sale sale:sales){
+            if(Objects.equals(sale.getStartDate(), "11-1-2022")){
+                sOe="start";
+            messagesHandler.sendSaleToUser(token,sale.getSaleText(),sOe);}
+            if(Objects.equals(sale.getEndDate(), "11-1-2022")){
+                sOe="end";
+                messagesHandler.sendSaleToUser(token,sale.getSaleText(),sOe);}
+        }
+
+    }
 }

@@ -25,6 +25,7 @@ public class Persist {
     public Persist(SessionFactory sf) {
         this.sessionFactory = sf;
     }
+
     @PostConstruct
     public void createConnectionToDatabase() {
 
@@ -41,7 +42,7 @@ public class Persist {
 
     // sign up
 
-    public boolean didUsernameAvailable (String username ){
+    public boolean didUsernameAvailable(String username) {
         boolean availableName = true;
         Session session = sessionFactory.openSession();
         UserObject userObject = (UserObject) session.createQuery("FROM UserObject u WHERE u.username =:username")
@@ -56,7 +57,7 @@ public class Persist {
     }
 
 
-    public boolean addUser (String username , String password ){
+    public boolean addUser(String username, String password) {
         boolean success = false;
         if (didUsernameAvailable(username)) {
             Session session = sessionFactory.openSession();
@@ -75,30 +76,32 @@ public class Persist {
 
     // log in
 
-    public String logIn (String username , String password){
-
+    public String logIn(String username, String password) {
         Session session = sessionFactory.openSession();
         UserObject userObject = (UserObject) session.createQuery("FROM UserObject u WHERE u.username =:username AND u.password =:password")
-                .setParameter("username",username)
-                .setParameter("password",password)
+                .setParameter("username", username)
+                .setParameter("password", password)
                 .uniqueResult();
         session.close();
-        if (userObject!= null) {
-          return userObject.getToken();
-        }else {
-          return null;
+        if (userObject != null)
+            return userObject.getToken();
+        else {
+            return null;
         }
-
     }
-
-    public boolean firstLogIn (String token){
-        if (getUserByToken(token).getFirstLogIn()!=0 ){
-            return false ;
-        }else {
-            UserObject userObject = getUserByToken(token);
-            userObject.setFirstLogIn(1);
+    public boolean firstLogIn(String token) {
+        UserObject userObject = getUserByToken(token);
+        if (userObject.getFirstLogIn() == 0) {
+            Session session = sessionFactory.openSession();
+            Transaction transaction = session.beginTransaction();
+            int firstLogin = 1;
+            userObject.setFirstLogIn(firstLogin);
+            session.saveOrUpdate(userObject);
+            transaction.commit();
+            session.close();
             return true;
-
+        } else {
+       return false;
         }
     }
 
@@ -290,17 +293,14 @@ public class Persist {
     //dose store belong to user
     public boolean doseStoreBelongToUser (String token ,int storeId ){
         Session session = sessionFactory.openSession();
-        Organizations organizations = (Organizations) session.createQuery("SELECT organizations FROM OrganizationStore o WHERE o.store.id=:id ")
+       List <Organizations> organizations =session.createQuery("SELECT organizations FROM OrganizationStore o WHERE o.store.id=:id ")
                 .setParameter("id",storeId)
-                .uniqueResult();
+                .list();
         session.close();
-        if (doseUserBelongToOrganization(token,organizations.getId()))
-        {
-            return true;
-        }else {
-            return false;
-        }
-    }
+       for(Organizations organizations1:organizations){
+        return doseUserBelongToOrganization(token,organizations1.getId());
+    }return doseUserBelongToOrganization(token,0);} //doesnt work perfect!
+
 
     // if sale belong to user
     public boolean doseSaleBelongToUser (String token , int saleId) {
@@ -309,12 +309,7 @@ public class Persist {
                 .setParameter("id",saleId)
                 .uniqueResult();
         session.close();
-        if (doseStoreBelongToUser(token,store.getId())){
-            return true;
-        }else {
-            return false;
-
-        }
+        return doseStoreBelongToUser(token, store.getId());
 
 
     }
