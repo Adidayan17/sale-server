@@ -14,6 +14,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class Persist {
@@ -199,10 +200,22 @@ public class Persist {
         return sales;
     }
 //All sales for search page
-    public List<Sale> getAllSales  (String token)
+    public List<Sale> getAllSalesByToken  (String token)
     {
         return sessionFactory.openSession().createQuery("FROM Sale s ")
                 .list();
+    }
+    public List<Sale> getAllSales ()
+    {
+        return sessionFactory.openSession().createQuery("FROM Sale s ")
+                .list();
+    }
+    public String getSaleText(){
+        List<Sale> sales=getAllSales();
+        String someText = "";
+        for(Sale sale: sales){
+            someText=sale.getSaleText();
+        }return someText;
     }
 
     //remove user to organization
@@ -254,8 +267,6 @@ public class Persist {
 
 
     }
-
-
 
     //dose store belong to organization
     public boolean doseStoreBelongToOrganization (int storeId , int organizationId){
@@ -314,11 +325,39 @@ public class Persist {
                 .uniqueResult();
         session.close();
         return doseStoreBelongToUser(token, store.getId());
-
+    }
+//list of users
+    public List<UserObject> getUsersToSendSale() {
+        Session session= sessionFactory.openSession();
+        List<UserObject> userObjects=null;
+        List<Organizations> organizations=getAllOrganizations();
+        List<Sale> sales =getAllSales();
+        for(Sale sale:sales){
+           int storeId= sale.getStore().getId();
+           for(Organizations organization:organizations) {
+               if (doseStoreBelongToOrganization(storeId, organization.getId())) {
+                   userObjects.addAll(getUserByOrganizationId(organization.getId()));
+               }
+           }
+        }
+        session.close();
+return userObjects;
 
     }
-
+    public List<UserObject> getUserByOrganizationId(int organizationId){
+        {
+            return sessionFactory.openSession().createQuery("SELECT UserObject FROM OrganizationUser u WHERE u.id=:id").setParameter("id",organizationId)
+                    .list();
+        }
     }
+    public List<Organizations> getAllOrganizations ()
+    {
+        return sessionFactory.openSession().createQuery("FROM Organizations o ")
+                .list();
+    }
+
+
+}
 
 
 

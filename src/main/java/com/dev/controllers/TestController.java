@@ -4,6 +4,7 @@ import com.dev.Persist;
 import com.dev.objects.Organizations;
 import com.dev.objects.Sale;
 import com.dev.objects.Store;
+import com.dev.objects.UserObject;
 import com.dev.utils.MessagesHandler;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +65,8 @@ public class TestController {
    }
 
     @RequestMapping (value = "get-all-sales")//amit add
-    public List<Sale> getAllSales (String token){
-        return persist.getAllSales(token);
+    public List<Sale> getAllSalesByToken (String token){
+        return persist.getAllSalesByToken(token);
     }
    @RequestMapping (value = "change-setting" )
     public boolean changeSetting ( String token , int organizationId){
@@ -91,6 +92,19 @@ public class TestController {
     public boolean doseUserBelongToOrganization (String token , int organizationId){
       return persist.doseUserBelongToOrganization(token,organizationId);
    }
+//    public void startSale () {
+//        String sOe;
+//        List<Sale> sales=persist.getAllSales();
+//        for(Sale sale:sales){
+//            if(Objects.equals(sale.getStartDate(), "11-1-2022")){
+//                sOe="start";
+//                messagesHandler.sendSaleToUser(sale.getSaleText(),sOe);}
+//            if(Objects.equals(sale.getEndDate(), "11-1-2022")){
+//                sOe="end";
+//                messagesHandler.sendSaleToUser(sale.getSaleText(),sOe);}
+//        }
+//
+//    }
 
 
 }
