@@ -68,29 +68,29 @@ public class MessagesHandler extends TextWebSocketHandler {
 //        }
 //    }
 
-
-@PostConstruct
-    public void init () {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    sendNewNotification();
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-   }
-        public void sendNewNotification () {
-        for (WebSocketSession session : sessionList) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("test","haha");
-            try {
-                session.sendMessage(new TextMessage(jsonObject.toString()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//
+//@PostConstruct
+//    public void init () {
+//        new Thread(() -> {
+//            while (true) {
+//                try {
+//                    sendNewNotification();
+//                    Thread.sleep(10000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
+//   }
+//        public void sendNewNotification () {
+//        for (WebSocketSession session : sessionList) {
+//            JSONObject jsonObject = new JSONObject();
+//            jsonObject.put("test","haha");
+//            try {
+//                session.sendMessage(new TextMessage(jsonObject.toString()));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 }

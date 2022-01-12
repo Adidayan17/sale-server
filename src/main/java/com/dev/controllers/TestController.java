@@ -64,7 +64,7 @@ public class TestController {
         return persist.getSaleForUser(token);
    }
 
-    @RequestMapping (value = "get-all-sales")//amit add
+    @RequestMapping (value = "get-all-sales")
     public List<Sale> getAllSalesByToken (String token){
         return persist.getAllSalesByToken(token);
     }
@@ -91,6 +91,11 @@ public class TestController {
    @RequestMapping(value = "if-user-belong-to-organization")
     public boolean doseUserBelongToOrganization (String token , int organizationId){
       return persist.doseUserBelongToOrganization(token,organizationId);
+   }
+
+   @RequestMapping(value = "get-organization-for-user")
+    public List<Organizations> gatOrganizationsForUser (String token){
+        return persist.gatOrganizationsForUser(token);
    }
 //    public void startSale () {
 //        String sOe;

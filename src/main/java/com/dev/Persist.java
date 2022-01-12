@@ -156,10 +156,10 @@ public class Persist {
     }
 
     // get organizations for user
-    public List<Organizations> gatOrganizationsForUser (int userId){
+    public List<Organizations> gatOrganizationsForUser (String  token){
          Session session =sessionFactory.openSession();
         List <Organizations> organizations = session.createQuery("SELECT organizations FROM OrganizationUser o WHERE o.userObject.id=:id ")
-                .setParameter("id",userId)
+                .setParameter("id",getUserByToken(token).getId())
                 .list();
         session.close();
         return organizations;
@@ -188,7 +188,7 @@ public class Persist {
     {
         Session session = sessionFactory.openSession();
         List<Sale> sales = new ArrayList<>();
-        List<Organizations> organizations = gatOrganizationsForUser(getUserByToken(token).getId());
+        List<Organizations> organizations = gatOrganizationsForUser(token);
         for (Organizations organization : organizations ){
             List<Store> stores = getStoresForOrganization(organization.getId());
             for (Store store : stores) {
@@ -285,8 +285,7 @@ public class Persist {
         }
 
     }
-
-    // dose user belong to organization
+     // dose user belong to organization
 
     public boolean doseUserBelongToOrganization (String token , int organizationId){
         Session session = sessionFactory.openSession();
