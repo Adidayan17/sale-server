@@ -12,7 +12,9 @@ import javax.annotation.PostConstruct;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -272,7 +274,7 @@ public class Persist {
     public boolean doseStoreBelongToOrganization (int storeId , int organizationId){
        Session session = sessionFactory.openSession();
         Organizations organizations=(Organizations)session
-                .createQuery("FROM OrganizationStore o WHERE o.store.id =:storeId AND o.organizations.id =:organizationId")
+                .createQuery("SELECT organizations FROM OrganizationStore o WHERE o.store.id =:storeId AND o.organizations.id =:organizationId")
                 .setParameter("storeId",storeId)
                 .setParameter("organizationId",organizationId)
                 .uniqueResult();
@@ -325,34 +327,69 @@ public class Persist {
         session.close();
         return doseStoreBelongToUser(token, store.getId());
     }
-//list of users
-    public List<UserObject> getUsersToSendSale() {
-        Session session= sessionFactory.openSession();
-        List<UserObject> userObjects=null;
-        List<Organizations> organizations=getAllOrganizations();
-        List<Sale> sales =getAllSales();
-        for(Sale sale:sales){
-           int storeId= sale.getStore().getId();
-           for(Organizations organization:organizations) {
-               if (doseStoreBelongToOrganization(storeId, organization.getId())) {
-                   userObjects.addAll(getUserByOrganizationId(organization.getId()));
-               }
-           }
-        }
-        session.close();
-return userObjects;
 
+
+   // list of users
+
+    public List<UserObject> getUsersToSendStartSales() {
+     List<UserObject> userObjectList=null;
+     List<Organizations> organizations=getAllOrganizations();
+     List<Sale> startSales=getStartSales();
+     for(Sale start:startSales){
+         for (Organizations organizations1:organizations){
+             if(doseStoreBelongToOrganization(start.getStore().getId(),organizations1.getId())){
+                 userObjectList=getUserByOrganizationId(organizations1.getId());
+             }
+         }
+     }  return userObjectList;
     }
+    public List<UserObject> getUsersToSendEndSales() {
+        List<UserObject> userObjectList=null;
+        List<Organizations> organizations=getAllOrganizations();
+        List<Sale> endSales=getEndSales();
+        for(Sale end:endSales){
+            for (Organizations organizations1:organizations){
+                if(doseStoreBelongToOrganization(end.getStore().getId(),organizations1.getId())){
+                    userObjectList=getUserByOrganizationId(organizations1.getId());
+                }
+            }
+        }  return userObjectList;
+    }
+
     public List<UserObject> getUserByOrganizationId(int organizationId){
-        {
-            return sessionFactory.openSession().createQuery("SELECT UserObject FROM OrganizationUser u WHERE u.id=:id").setParameter("id",organizationId)
+        {   Session session = sessionFactory.openSession();
+            List<UserObject> userObjectList =sessionFactory.openSession().createQuery("SELECT userObject FROM OrganizationUser u WHERE u.organizations.id=:id").setParameter("id",organizationId)
                     .list();
+            session.close();
+            return userObjectList;
         }
     }
     public List<Organizations> getAllOrganizations ()
     {
         return sessionFactory.openSession().createQuery("FROM Organizations o ")
                 .list();
+    }
+    public List<Sale> getStartSales(){
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH");
+        Date date = new Date();
+        String currentDate = formatter.format(date);
+        Session session = sessionFactory.openSession();
+        List <Sale> sales =session.createQuery("FROM Sale s WHERE s.startDate=:currentDate")
+                .setParameter("currentDate",currentDate)
+                .list();
+        session.close();
+        return sales;
+    }
+    public List<Sale> getEndSales(){
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH");
+        Date date = new Date();
+        String currentDate = formatter.format(date);
+        Session session = sessionFactory.openSession();
+        List <Sale> sales =session.createQuery("FROM Sale s WHERE s.endDate=:currentDate ")
+                .setParameter("currentDate",currentDate)
+                .list();
+        session.close();
+        return sales;
     }
 
 

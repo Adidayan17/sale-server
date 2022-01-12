@@ -97,7 +97,24 @@ public class TestController {
     public List<Organizations> gatOrganizationsForUser (String token){
         return persist.gatOrganizationsForUser(token);
    }
-//    public void startSale () {
+
+
+   @RequestMapping(value = "get-start-sales")
+    public List<Sale> getStartSales (){
+        return persist.getStartSales();
+    }
+
+    @RequestMapping(value = "get-users-to-send-start-sales")
+    public List<UserObject> getUsersToSendStartSales (){
+        return persist.getUsersToSendStartSales();
+    }
+    @RequestMapping(value = "get-users-to-send-end-sales")
+    public List<UserObject> getUsersToSendEndSales (){
+        return persist.getUsersToSendEndSales();
+    }
+
+
+   //    public void startSale () {
 //        String sOe;
 //        List<Sale> sales=persist.getAllSales();
 //        for(Sale sale:sales){

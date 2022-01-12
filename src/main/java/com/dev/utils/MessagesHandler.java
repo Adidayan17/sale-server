@@ -3,6 +3,7 @@ package com.dev.utils;
 import com.dev.Persist;
 import com.dev.objects.Sale;
 import com.dev.objects.Store;
+import com.dev.objects.UserObject;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +26,9 @@ public class MessagesHandler extends TextWebSocketHandler {
     private static List<WebSocketSession> sessionList = new CopyOnWriteArrayList<>();
     private static Map<String ,WebSocketSession> sessionMap = new HashMap<>();
     private static Persist persist;
+    private static List<UserObject> userObjectList;
+    private static List<Sale> startSales;
+    private static List<Sale> endSales;
 
 
     @Override
@@ -51,37 +55,43 @@ public class MessagesHandler extends TextWebSocketHandler {
 
     }
 
-//    public void sendSaleToUsers(){
-//        WebSocketSession session = sessionMap.get(token);
-//        if (session != null) {
-//            JSONObject jsonObject = new JSONObject();
-//            jsonObject.put("saleText", saleText);
-//            jsonObject.put("sOe",sOe);
-//            try {
-//                session.sendMessage(new TextMessage(jsonObject.toString()));
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//        } else {
-//            System.out.println("no token " + token);
-//        }
-//    }
+    public void sendStartSaleToUsers(){
+        WebSocketSession session = sessionMap.get("CE8724150E6FDCAD631F5432D5C9DC3D");
+       List<UserObject> userObjectList = persist.getUsersToSendStartSales();
+        for (UserObject userObject : userObjectList)
+            session= sessionMap.get(userObject.getToken());
+        JSONObject jsonObject = new JSONObject();
+        List <Sale>startSales=persist.getStartSales();
+        if (session != null) {
+            for(Sale sale:startSales) {
+                jsonObject.put("saleText", sale.getSaleText());
+                jsonObject.put("sOe", "START");
+            }
+            try {
+                session.sendMessage(new TextMessage(jsonObject.toString()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            System.out.println("no token");
+        }
+    }
 
 //
-//@PostConstruct
-//    public void init () {
-//        new Thread(() -> {
-//            while (true) {
-//                try {
-//                    sendNewNotification();
-//                    Thread.sleep(10000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }).start();
-//   }
+@PostConstruct
+    public void init () {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    sendStartSaleToUsers();
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+   }
 //        public void sendNewNotification () {
 //        for (WebSocketSession session : sessionList) {
 //            JSONObject jsonObject = new JSONObject();
