@@ -202,7 +202,7 @@ public class Persist {
         return sales;
     }
 //All sales for search page
-    public List<Sale> getAllSalesByToken  (String token)
+    public List<Sale> getAllSalesByToken  ()
     {
         return sessionFactory.openSession().createQuery("FROM Sale s ")
                 .list();
