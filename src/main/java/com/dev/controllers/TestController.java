@@ -65,8 +65,8 @@ public class TestController {
    }
 
     @RequestMapping (value = "get-all-sales")
-    public List<Sale> getAllSalesByToken (String token){
-        return persist.getAllSalesByToken(token);
+    public List<Sale> getAllSalesByToken (){
+        return persist.getAllSalesByToken();
     }
    @RequestMapping (value = "change-setting" )
     public boolean changeSetting ( String token , int organizationId){
