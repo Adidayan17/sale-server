@@ -5,6 +5,7 @@ import com.dev.objects.Sale;
 import com.dev.objects.Store;
 import com.dev.objects.UserObject;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.socket.CloseStatus;
@@ -14,10 +15,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
@@ -25,11 +23,12 @@ public class MessagesHandler extends TextWebSocketHandler {
 
     private static List<WebSocketSession> sessionList = new CopyOnWriteArrayList<>();
     private static Map<String ,WebSocketSession> sessionMap = new HashMap<>();
-    private static Persist persist;
-    private static List<UserObject> userObjectList;
-    private static List<Sale> startSales;
-    private static List<Sale> endSales;
 
+    @Autowired
+    private  Persist persist;
+    private  List<UserObject> userObjectList;
+    private  List<Sale> startSales;
+    private  List<Sale> endSales;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -37,7 +36,7 @@ public class MessagesHandler extends TextWebSocketHandler {
         Map<String, String> map = Utils.splitQuery(session.getUri().getQuery());
         sessionMap.put(map.get("token"),session);
         sessionList.add(session);
-        System.out.println(sessionMap.get("token")+session.toString());
+        System.out.println(sessionMap.get("token") + session.toString());
         System.out.println("afterConnectionEstablished");
     }
 
@@ -56,19 +55,29 @@ public class MessagesHandler extends TextWebSocketHandler {
     }
 
     public void sendStartSaleToUsers(){
-        WebSocketSession session = sessionMap.get("CE8724150E6FDCAD631F5432D5C9DC3D");
-       List<UserObject> userObjectList = persist.getUsersToSendStartSales();
-        for (UserObject userObject : userObjectList)
-            session= sessionMap.get(userObject.getToken());
-        JSONObject jsonObject = new JSONObject();
-        List <Sale>startSales=persist.getStartSales();
+        List<JSONObject> jsonObjectList = new ArrayList<>();
+        List<UserObject> userObjectList =new ArrayList<>();
+        List<Sale> startSales1=new ArrayList<>();
+        if (persist != null) {
+          startSales1= persist.getStartSales();
+          userObjectList= persist.getUsersToSendStartSales();
+        }if(userObjectList!=null){
+        for(UserObject userObject :userObjectList)
+             sessionList.add(sessionMap.get(userObject.getToken()));}
+        for (WebSocketSession session : sessionList)
         if (session != null) {
-            for(Sale sale:startSales) {
+            if (startSales1 !=null){
+            for(Sale sale:startSales1) {
+                JSONObject jsonObject = new JSONObject();
                 jsonObject.put("saleText", sale.getSaleText());
-                jsonObject.put("sOe", "START");
-            }
+                jsonObject.put("sOe","START");
+                jsonObjectList.add(jsonObject);
+            }}
             try {
-                session.sendMessage(new TextMessage(jsonObject.toString()));
+                if(jsonObjectList.size()>0){
+                    for(JSONObject jsonObject:jsonObjectList){
+                      session.sendMessage(new TextMessage(jsonObject.toString()));}}
+                else {System.out.println("no start sale now");}
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -77,17 +86,51 @@ public class MessagesHandler extends TextWebSocketHandler {
             System.out.println("no token");
         }
     }
+    public void sendEndSaleToUsers(){
+        List<JSONObject> jsonObjectList = new ArrayList<>();
+        List<UserObject> userObjectList =new ArrayList<>();
+        List<Sale> endSales1=new ArrayList<>();
+        if (persist != null) {
+            endSales1= persist.getEndSales();
+            userObjectList= persist.getUsersToSendEndSales();
+        }if(userObjectList!=null){
+            for(UserObject userObject :userObjectList)
+                sessionList.add(sessionMap.get(userObject.getToken()));}
+        for (WebSocketSession session : sessionList)
+            if (session != null) {
+                if (endSales1 !=null){
+                    for(Sale sale: endSales1) {
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("saleText", sale.getSaleText());
+                        jsonObject.put("sOe","Expired");
+                        jsonObjectList.add(jsonObject);
+                    }}
+                try {
+                    if(jsonObjectList.size()>0){
+                        for(JSONObject jsonObject:jsonObjectList){
+                            session.sendMessage(new TextMessage(jsonObject.toString()));}}
+                    else {System.out.println("no end sale now");}
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-//
+            } else {
+                System.out.println("no token");
+            }
+    }
+
 @PostConstruct
     public void init () {
         new Thread(() -> {
             while (true) {
                 try {
+                    Thread.sleep(10000);
                     sendStartSaleToUsers();
-                    Thread.sleep(1000);
+                    sendEndSaleToUsers();
+                    Thread.sleep(60000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+
                 }
             }
         }).start();

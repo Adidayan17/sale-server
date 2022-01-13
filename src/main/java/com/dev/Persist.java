@@ -34,7 +34,7 @@ public class Persist {
 
         try {
             this.connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/sales?SSL=false", "root", "1234");
+                    "jdbc:mysql://localhost:3306/sales?useSSL=false", "root", "1234");
 
 
         } catch (SQLException e) {
@@ -344,7 +344,7 @@ public class Persist {
      }  return userObjectList;
     }
     public List<UserObject> getUsersToSendEndSales() {
-        List<UserObject> userObjectList=null;
+        List<UserObject> userObjectList=new ArrayList<>();
         List<Organizations> organizations=getAllOrganizations();
         List<Sale> endSales=getEndSales();
         for(Sale end:endSales){
