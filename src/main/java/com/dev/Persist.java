@@ -332,10 +332,11 @@ public class Persist {
    // list of users
 
     public List<UserObject> getUsersToSendStartSales() {
-     List<UserObject> userObjectList=null;
+     List<UserObject> userObjectList=new ArrayList<>();
      List<Organizations> organizations=getAllOrganizations();
      List<Sale> startSales=getStartSales();
      for(Sale start:startSales){
+         if(start.getAvailableForAll()==1){userObjectList=getAllUsers(); return userObjectList;}
          for (Organizations organizations1:organizations){
              if(doseStoreBelongToOrganization(start.getStore().getId(),organizations1.getId())){
                  userObjectList=getUserByOrganizationId(organizations1.getId());
@@ -348,6 +349,7 @@ public class Persist {
         List<Organizations> organizations=getAllOrganizations();
         List<Sale> endSales=getEndSales();
         for(Sale end:endSales){
+            if(end.getAvailableForAll()==1){userObjectList=getAllUsers(); return userObjectList;}
             for (Organizations organizations1:organizations){
                 if(doseStoreBelongToOrganization(end.getStore().getId(),organizations1.getId())){
                     userObjectList=getUserByOrganizationId(organizations1.getId());
@@ -355,6 +357,11 @@ public class Persist {
             }
         }  return userObjectList;
     }
+    public List<UserObject> getAllUsers() {
+        {
+            return sessionFactory.openSession().createQuery("FROM UserObject u ")
+                    .list();
+        }}
 
     public List<UserObject> getUserByOrganizationId(int organizationId){
         {   Session session = sessionFactory.openSession();
