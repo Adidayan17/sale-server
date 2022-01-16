@@ -1,6 +1,7 @@
 package com.dev.utils;
 
 import com.dev.Persist;
+import com.dev.objects.Organizations;
 import com.dev.objects.Sale;
 import com.dev.objects.Store;
 import com.dev.objects.UserObject;
@@ -54,14 +55,54 @@ public class MessagesHandler extends TextWebSocketHandler {
 
     }
 
+
+    public void sendSale (){
+//        List<JSONObject> jsonObjectList = new ArrayList<>();
+        List<Sale> startSales = persist.getStartSales();
+        List<UserObject> userObjects=null ;
+        List<Organizations> organizations=persist.getAllOrganizations();
+        if (startSales!=null) {
+            for (Sale start : startSales) {
+                if (start.getAvailableForAll() != 1) {
+                    for (Organizations organization : organizations) {
+                        if (persist.doseStoreBelongToOrganization(start.getStore().getId(), organization.getId())) {
+                            userObjects = persist.getUserByOrganizationId(organization.getId());
+                            if (userObjects != null) {
+                                JSONObject jsonObject = new JSONObject();
+                                jsonObject.put("saleText", start.getSaleText());
+                                jsonObject.put("sOe", "START");// to fix
+                                // jsonObjectList.add(jsonObject);
+                                for (UserObject userObject : userObjects)
+                                    sessionList.add(sessionMap.get(userObject.getToken()));
+                                for(WebSocketSession session:sessionList)
+                                    try {
+                                        if(session!=null)
+                                        session.sendMessage(new TextMessage(jsonObject.toString()));
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+        }   else {
+            System.out.println("no start sale now");
+        }
+        }
+
+
     public void sendStartSaleToUsers() {
         List<JSONObject> jsonObjectList = new ArrayList<>();
         List<UserObject> userObjectList = new ArrayList<>();
         List<Sale> startSales1 = new ArrayList<>();
-        if (persist != null) {
-            startSales1 = persist.getStartSales();
-            userObjectList = persist.getUsersToSendStartSales();
-        }
+//        if (persist != null) {
+//            startSales1 = persist.getStartSales();
+//            userObjectList = persist.getUsersToSendStartSales();
+//        }
         if (userObjectList != null) {
             {
                 for (UserObject userObject : userObjectList)
@@ -142,8 +183,9 @@ public class MessagesHandler extends TextWebSocketHandler {
             while (true) {
                 try {
                     Thread.sleep(10000);
-                    sendStartSaleToUsers();
-                    sendEndSaleToUsers();
+//                    sendStartSaleToUsers();
+//                    sendEndSaleToUsers();
+                    sendSale();
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

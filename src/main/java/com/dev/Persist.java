@@ -339,6 +339,7 @@ public class Persist {
          if(start.getAvailableForAll()==1){userObjectList=getAllUsers(); return userObjectList;}
          for (Organizations organizations1:organizations){
              if(doseStoreBelongToOrganization(start.getStore().getId(),organizations1.getId())){
+                 /// send message
                  userObjectList=getUserByOrganizationId(organizations1.getId());
              }
          }
