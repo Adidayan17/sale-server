@@ -56,7 +56,7 @@ public class MessagesHandler extends TextWebSocketHandler {
     }
 
 
-    public void sendSale() {
+    public void sendStartSale() {
         List<Sale> startSales = persist.getStartSales();
         List<UserObject> userObjects = null;
         List<Organizations> organizations = persist.getAllOrganizations();
@@ -73,8 +73,8 @@ public class MessagesHandler extends TextWebSocketHandler {
                                     jsonObject.put("sOe", "START");// to fix
                                     for (UserObject userObject : userObjects) {
                                         sessionList.add(sessionMap.get(userObject.getToken()));
-                                       if( sessionMap.get(userObject.getToken())!=null)
-                                           sessionMap.get(userObject.getToken()).sendMessage(new TextMessage(jsonObject.toString()));
+                                        if (sessionMap.get(userObject.getToken()) != null)
+                                            sessionMap.get(userObject.getToken()).sendMessage(new TextMessage(jsonObject.toString()));
                                     }
                                 }
                             } catch (IOException e) {
@@ -92,87 +92,40 @@ public class MessagesHandler extends TextWebSocketHandler {
     }
 
 
-//    public void sendStartSaleToUsers() {
-//        List<JSONObject> jsonObjectList = new ArrayList<>();
-//        List<UserObject> userObjectList = new ArrayList<>();
-//        List<Sale> startSales1 = new ArrayList<>();
-////        if (persist != null) {
-////            startSales1 = persist.getStartSales();
-////            userObjectList = persist.getUsersToSendStartSales();
-////        }
-//        if (userObjectList != null) {
-//            {
-//                for (UserObject userObject : userObjectList)
-//                    sessionList.add(sessionMap.get(userObject.getToken()));
-//            }
-//            for (WebSocketSession session : sessionList)
-//                if (session != null) {
-//                    if (startSales1 != null) {
-//                        for (Sale sale : startSales1) {
-//                            JSONObject jsonObject = new JSONObject();
-//                            jsonObject.put("saleText", sale.getSaleText());
-//                            jsonObject.put("sOe", "START");
-//                            jsonObjectList.add(jsonObject);
-//                        }
-//                    }
-//                    try {
-//                        if (jsonObjectList.size() > 0) {
-//                            for (JSONObject jsonObject : jsonObjectList) {
-//                                session.sendMessage(new TextMessage(jsonObject.toString()));
-//                            }
-//                        } else {
-//                            System.out.println("no start sale now");
-//                        }
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                }
-//        } else {
-//            System.out.println("no token");
-//        }
-//    }
-//
-//    public void sendEndSaleToUsers() {
-//        List<JSONObject> jsonObjectList = new ArrayList<>();
-//        List<UserObject> userObjectList = new ArrayList<>();
-//        List<Sale> endSales1 = new ArrayList<>();
-//        if (persist != null) {
-//            endSales1 = persist.getEndSales();
-//            userObjectList = persist.getUsersToSendEndSales();
-//        }
-//        if (userObjectList != null) {
-//            {
-//                for (UserObject userObject : userObjectList)
-//                    sessionList.add(sessionMap.get(userObject.getToken()));
-//            }
-//            for (WebSocketSession session : sessionList)
-//                if (session != null) {
-//                    if (endSales1 != null) {
-//                        for (Sale sale : endSales1) {
-//                            JSONObject jsonObject = new JSONObject();
-//                            jsonObject.put("saleText", sale.getSaleText());
-//                            jsonObject.put("sOe", "Expired");
-//                            jsonObjectList.add(jsonObject);
-//                        }
-//                    }
-//                    try {
-//                        if (jsonObjectList.size() > 0) {
-//                            for (JSONObject jsonObject : jsonObjectList) {
-//                                session.sendMessage(new TextMessage(jsonObject.toString()));
-//                            }
-//                        } else {
-//                            System.out.println("no end sale now");
-//                        }
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                }
-//        } else {
-//            System.out.println("no token");
-//        }
-//    }
+    public void sendEndSale() {
+        List<Sale> endSales = persist.getStartSales();
+        List<UserObject> userObjects = null;
+        List<Organizations> organizations = persist.getAllOrganizations();
+        if (endSales != null) {
+            for (Sale end : endSales) {
+                if (end.getAvailableForAll() != 1) {
+                    for (Organizations organization : organizations) {
+                        if (persist.doseStoreBelongToOrganization(end.getStore().getId(), organization.getId())) {
+                            userObjects = persist.getUserByOrganizationId(organization.getId());
+                            try {
+                                if (userObjects != null) {
+                                    JSONObject jsonObject = new JSONObject();
+                                    jsonObject.put("saleText", end.getSaleText());
+                                    jsonObject.put("sOe", "Expired");
+                                    for (UserObject userObject : userObjects) {
+                                        sessionList.add(sessionMap.get(userObject.getToken()));
+                                        if (sessionMap.get(userObject.getToken()) != null)
+                                            sessionMap.get(userObject.getToken()).sendMessage(new TextMessage(jsonObject.toString()));
+                                    }
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                    }
+                }
+            }
+        } else {
+            System.out.println("no end sale now");
+        }
+    }
 
     @PostConstruct
     public void init() {
@@ -180,9 +133,8 @@ public class MessagesHandler extends TextWebSocketHandler {
             while (true) {
                 try {
                     Thread.sleep(10000);
-//                    sendStartSaleToUsers();
-//                    sendEndSaleToUsers();
-                    sendSale();
+                    sendStartSale();
+                    sendEndSale();
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -191,6 +143,11 @@ public class MessagesHandler extends TextWebSocketHandler {
             }
         }).start();
     }
+}
+
+
+
+
 //        public void sendNewNotification () {
 //        for (WebSocketSession session : sessionList) {
 //            JSONObject jsonObject = new JSONObject();
@@ -202,4 +159,3 @@ public class MessagesHandler extends TextWebSocketHandler {
 //            }
 //        }
 //    }
-}
