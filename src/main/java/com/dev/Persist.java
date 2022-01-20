@@ -378,7 +378,7 @@ public class Persist {
                 .list();
     }
     public List<Sale> getStartSales(){
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date date = new Date();
         String currentDate = formatter.format(date);
         Session session = sessionFactory.openSession();
@@ -389,7 +389,7 @@ public class Persist {
         return sales;
     }
     public List<Sale> getEndSales(){
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date date = new Date();
         String currentDate = formatter.format(date);
         Session session = sessionFactory.openSession();
