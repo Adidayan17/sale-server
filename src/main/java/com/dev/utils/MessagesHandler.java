@@ -124,7 +124,7 @@ public void sender(List<UserObject> userObjects,Sale sale,String sOe){
                     Thread.sleep(10000);
                     sendStartSale();
                     sendEndSale();
-                    Thread.sleep(59999);
+                    Thread.sleep(49999);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
 
