@@ -101,12 +101,13 @@ public class MessagesHandler extends TextWebSocketHandler {
     }
 
 public void sender(List<UserObject> userObjects,Sale sale,String sOe){
-    try {
-        if (userObjects != null) {
+    List<UserObject> userObjectList=persist.removeDoubleUsers(userObjects);
+        try {
+        if (userObjectList != null) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("saleText", sale.getSaleText());
             jsonObject.put("sOe", sOe);
-            for (UserObject userObject : userObjects) {
+            for (UserObject userObject : userObjectList) {
                 sessionList.add(sessionMap.get(userObject.getToken()));
                 if (sessionMap.get(userObject.getToken()) != null)
                     sessionMap.get(userObject.getToken()).sendMessage(new TextMessage(jsonObject.toString()));

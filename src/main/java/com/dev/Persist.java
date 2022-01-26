@@ -202,10 +202,11 @@ public class Persist {
         return sales;
     }
 //All sales for search page
-    public List<Sale> getAllSalesByToken  ()
-    {
-        return sessionFactory.openSession().createQuery("FROM Sale s ")
-                .list();
+    public List<Sale> getAllSalesByToken()
+    {List<Sale> sales=sessionFactory.openSession().createQuery("FROM Sale s ")
+            .list();
+        return removeDoubleSales(sales);
+
     }
     public List<Sale> getAllSales ()
     {
@@ -328,6 +329,24 @@ public class Persist {
         return doseStoreBelongToUser(token, store.getId());
     }
 
+    //to show only once even if store work with few organizations
+    public List<Sale> removeDoubleSales(List<Sale> saleList){
+        List<Sale> cleanList = new ArrayList<>();
+        for (Sale sale : saleList){
+            if (!cleanList.contains(sale))
+                cleanList.add(sale);
+        }
+        return cleanList;
+    }
+//to send only once for each user
+    public List<UserObject> removeDoubleUsers(List<UserObject> userObjectList){
+        List<UserObject> cleanList = new ArrayList<>();
+        for (UserObject userObject : userObjectList){
+            if (!cleanList.contains(userObject))
+                cleanList.add(userObject);
+        }
+        return cleanList;
+    }
 
    // list of users
 
